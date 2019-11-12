@@ -424,6 +424,11 @@ impl Statement<'_> {
         Ok(self.stmt.bind_parameter_index(&c_name))
     }
 
+    /// Return the number of SQL parameters expected for this statement.
+    pub fn bind_parameter_count(&self) -> usize {
+        self.stmt.bind_parameter_count()
+    }
+
     fn bind_parameters<P>(&mut self, params: P) -> Result<()>
     where
         P: IntoIterator,
@@ -1069,6 +1074,7 @@ mod test {
         let mut stmt = conn.prepare("").unwrap();
         assert_eq!(0, stmt.column_count());
         assert!(stmt.parameter_index("test").is_ok());
+        assert_eq!(stmt.bind_parameter_count(), 0);
         assert!(stmt.step().is_err());
         stmt.reset();
         assert!(stmt.execute(NO_PARAMS).is_err());
